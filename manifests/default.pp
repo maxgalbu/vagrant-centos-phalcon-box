@@ -79,7 +79,7 @@ exec { 'install phalcon':
 	cwd => '/tmp/cphalcon/build',
 	user => root,
 	require => Vcsrepo['/tmp/cphalcon'],
-	unless => 'php -i | grep phalcon',
+	unless => 'php -i 2>&1 | grep "^phalcon$" | grep -vi "no such file"',
 }
 file { '/etc/php.d/phalcon.ini':
 	source	=> "file:///vagrant/files/phalcon.ini",
