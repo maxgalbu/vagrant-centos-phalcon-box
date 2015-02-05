@@ -108,6 +108,11 @@ package { 'tilt':
 	require => [ Package['mime-types'] ],
 	provider => "gem"
 }
+package { 'i18n':
+	ensure  => '0.6.11',
+	require => [ Package['mime-types'] ],
+	provider => "gem"
+}
 #Non posso usare package perchè puppet non accetta opzioni (--no-ri --no-rdoc)
 exec { 'install mailcatcher':
 	command  => "gem install /tmp/mailcatcher.gem --no-ri --no-rdoc",
