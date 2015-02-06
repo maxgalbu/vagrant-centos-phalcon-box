@@ -200,7 +200,27 @@ php::module { 'pdo': }
 php::module { 'bcmath': }
 php::module { 'gd': }
 php::module { 'xml': }
-php::module { 'pecl-mongo': }
+php::module { 'pear': } #Installa anche pecl
+
+#Installo estensione mongo da pecl
+exec { 'install mongo from pecl':
+	command => "pecl install mongo",
+	require => [ 
+		Php::Module['pear'], 
+	],
+	unless => 'pecl list | grep mongo',
+}
+#Aggiungo ini per caricare l'estensione
+file { '/etc/php.d/mongo.ini':
+	source => "file:///vagrant/files/mongo.ini",
+	owner => root,
+	group => root,
+	require => [
+		Class['php'],
+		Exec['install mongo from pecl']
+	],
+	notify => Service['apache'],
+}
 
 class { 'php::devel':
 	require => Class['php'],
