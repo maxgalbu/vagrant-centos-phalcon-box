@@ -222,7 +222,7 @@ augeas { 'php.ini default':
 		'set max_input_vars "1000000"',
 	],
 	notify  => Service['apache'],
-	require => Class['php'],
+	require => [ Package[$packagelist], Class['php'] ],
 }
 
 augeas { 'php.ini date':
@@ -231,7 +231,7 @@ augeas { 'php.ini date':
 		'set date.timezone "Europe/Rome"',
 	],
 	notify  => Service['apache'],
-	require => Class['php'],
+	require => [ Package[$packagelist], Class['php'] ],
 }
 
 augeas { 'php.ini mail':
@@ -240,7 +240,7 @@ augeas { 'php.ini mail':
 		'set sendmail_path "/usr/bin/env catchmail"',
 	],
 	notify  => Service['apache'],
-	require => Class['php'],
+	require => [ Package[$packagelist], Class['php'] ],
 }
 
 augeas { 'php.ini xdebug':
@@ -254,7 +254,7 @@ augeas { 'php.ini xdebug':
 		'set xdebug.remote_port 9000'
 	],
 	notify  => Service['apache'],
-	require => Class['php'],
+	require => [ Package[$packagelist], Class['php'] ],
 }
 
 augeas { 'mcrypt.ini':
@@ -263,7 +263,7 @@ augeas { 'mcrypt.ini':
 		'set extension "mcrypt.so"'
 	],
 	notify  => Service['apache'],
-	require => Class['php'],
+	require => [ Package[$packagelist], Class['php'] ],
 }
 
 #Installo mysql server
