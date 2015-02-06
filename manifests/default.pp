@@ -78,7 +78,10 @@ exec { 'install phalcon':
 	command => '/bin/bash install',
 	cwd => '/tmp/cphalcon/build',
 	user => root,
-	require => Vcsrepo['/tmp/cphalcon'],
+	require => [
+		Vcsrepo['/tmp/cphalcon'],
+		Class['php::devel']
+	],
 	unless => 'php -i 2>&1 | grep "^phalcon$" | grep -vi "no such file"',
 }
 file { '/etc/php.d/phalcon.ini':
@@ -103,14 +106,14 @@ package { 'mime-types':
 	require => [ Package[$packagelist] ],
 	provider => "gem"
 }
-package { 'tilt':
-	ensure  => '1.4.1',
-	require => [ Package['mime-types'] ],
-	provider => "gem"
-}
 package { 'i18n':
 	ensure  => '0.6.11',
 	require => [ Package['mime-types'] ],
+	provider => "gem"
+}
+package { 'tilt':
+	ensure  => '1.4.1',
+	require => [ Package['i18n'] ],
 	provider => "gem"
 }
 #Non posso usare package perchè puppet non accetta opzioni (--no-ri --no-rdoc)
@@ -121,22 +124,22 @@ exec { 'install mailcatcher':
 	timeout => 900,
 }
 exec { 'start mailcatcher':
-	command			=> "mailcatcher --http-ip=0.0.0.0",
-	require			=> Exec['install mailcatcher'],
+	command		=> "mailcatcher --http-ip=0.0.0.0",
+	require		=> Exec['install mailcatcher'],
 }
 
 #Installo wkhtmltopdf + wkhtmltoimage
 file { '/usr/local/bin/wkhtmltopdf':
-	source	=>"file:///vagrant/files/wkhtmltopdf",
-	owner		=> root,
-	group		=> root,
-	mode		=> 755,
+	source	=> "file:///vagrant/files/wkhtmltopdf",
+	owner	=> root,
+	group	=> root,
+	mode	=> 755,
 }
 file { '/usr/local/bin/wkhtmltoimage':
-	source	=>"file:///vagrant/files/wkhtmltoimage",
-	owner		=> root,
-	group		=> root,
-	mode		=> 755,
+	source	=> "file:///vagrant/files/wkhtmltoimage",
+	owner	=> root,
+	group	=> root,
+	mode	=> 755,
 }
 
 
