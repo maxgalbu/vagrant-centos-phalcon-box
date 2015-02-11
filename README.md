@@ -43,6 +43,10 @@ First you need a [Git enabled terminal](#software-suggestions). Then you should 
 
     git clone https://github.com/maxgalbu/vagrant-php-phalcon-box.git
 
+If you are on OSX, you need to install the vagrant-triggers plugin:
+
+    vagrant plugin install vagrant-triggers
+
 You may want to install the vagrant-vbguest plugin to keep the VirtualBox Guest Additions updated:
 
     vagrant plugin install vagrant-vbguest
