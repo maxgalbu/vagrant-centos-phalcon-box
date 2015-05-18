@@ -111,6 +111,8 @@ This module requires functions provided by the Example42 Puppi module.
 
 ## OPERATING SYSTEMS SUPPORT
 
+REDHAT 7 - BETA
+
 REDHAT 6 - Full
 
 REDHAT 5 - Full
@@ -124,6 +126,8 @@ CENTOS 5 - Full
 CENTOS 4 - Partial
 
 SCIENTIFIC 6 - Full
+
+SCIENTIFIC 5 - Full
 
 AMAZON LINUX 3 (Sigh) - Partial
 

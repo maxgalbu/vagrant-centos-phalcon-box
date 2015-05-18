@@ -1,22 +1,36 @@
 # = Define yum::managed_yumrepo
 #
 define yum::managed_yumrepo (
-  $descr          = 'absent',
-  $baseurl        = 'absent',
-  $mirrorlist     = 'absent',
-  $enabled        = 0,
-  $gpgcheck       = 0,
-  $gpgkey         = 'absent',
-  $gpgkey_source  = '',
-  $gpgkey_name    = '',
-  $failovermethod = 'absent',
-  $priority       = 99,
-  $exclude        = 'absent',
-  $autokeyimport  = 'no',
-  $includepkgs    = 'absent') {
+  $descr           = 'absent',
+  $baseurl         = 'absent',
+  $mirrorlist      = 'absent',
+  $enabled         = 0,
+  $gpgcheck        = 0,
+  $gpgkey          = 'absent',
+  $gpgkey_source   = '',
+  $gpgkey_name     = '',
+  $failovermethod  = 'absent',
+  $priority        = 99,
+  $protect         = 'absent',
+  $exclude         = 'absent',
+  $autokeyimport   = 'no',
+  $includepkgs     = 'absent',
+  $metadata_expire = 'absent',
+  $include         = 'absent',
+  $sslcacert       = 'absent',
+  $sslclientcert   = 'absent',
+  $sslclientkey    = 'absent',
+  $sslverify       = 'absent',
+  ) {
 
   # ensure that everything is setup
   include yum::prerequisites
+
+  if $protect != 'absent' {
+    if ! defined(Yum::Plugin['protectbase']) {
+      yum::plugin { 'protectbase': }
+    }
+  }
 
   file { "/etc/yum.repos.d/${name}.repo":
     ensure  => file,
@@ -46,16 +60,23 @@ define yum::managed_yumrepo (
     }
   }
   yumrepo { $name:
-    descr          => $descr,
-    baseurl        => $baseurl,
-    mirrorlist     => $mirrorlist,
-    enabled        => $enabled,
-    gpgcheck       => $gpgcheck,
-    gpgkey         => $gpgkey,
-    failovermethod => $failovermethod,
-    priority       => $priority,
-    exclude        => $exclude,
-    includepkgs    => $includepkgs,
+    descr           => $descr,
+    baseurl         => $baseurl,
+    mirrorlist      => $mirrorlist,
+    enabled         => $enabled,
+    gpgcheck        => $gpgcheck,
+    gpgkey          => $gpgkey,
+    failovermethod  => $failovermethod,
+    priority        => $priority,
+    protect         => $protect,
+    exclude         => $exclude,
+    includepkgs     => $includepkgs,
+    metadata_expire => $metadata_expire,
+    include         => $include,
+    sslcacert       => $sslcacert,
+    sslclientcert   => $sslclientcert,
+    sslclientkey    => $sslclientkey,
+    sslverify       => $sslverify
   }
 
   if $autokeyimport == 'yes' and $gpgkey != '' {

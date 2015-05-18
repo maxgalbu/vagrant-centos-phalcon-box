@@ -7,38 +7,53 @@ class yum::defaults ( ) inherits yum::params {
 
   $osver = split($::operatingsystemrelease, '[.]')
 
-  if $yum::extrarepo =~ /epel/ { include yum::repo::epel }
-  if $yum::extrarepo =~ /rpmforge/ { include yum::repo::rpmforge }
-  if $yum::extrarepo =~ /jpackage5/ { include yum::repo::jpackage5 }
-  if $yum::extrarepo =~ /jpackage6/ { include yum::repo::jpackage6 }
-  if $yum::extrarepo =~ /remi/ { include yum::repo::remi }
-  if $yum::extrarepo =~ /remi_php55/ { include yum::repo::remi_php55 }
-  if $yum::extrarepo =~ /tmz/ and $osver[0] != '4' { include yum::repo::tmz }
-  if $yum::extrarepo =~ /webtatic/ { include yum::repo::webtatic }
-  if $yum::extrarepo =~ /puppetlabs/ and $osver[0] != '4' { include yum::repo::puppetlabs }
-  if $yum::extrarepo =~ /puppetdevel/ and $osver[0] != '4' { include yum::repo::puppetdevel }
-  if $yum::extrarepo =~ /nginx/ and $osver[0] != '4' { include yum::repo::nginx }
-  if $yum::extrarepo =~ /mongodb/ and $osver[0] != '4' { include yum::repo::mongodb }
-  if $yum::extrarepo =~ /repoforge/ { include yum::repo::repoforge }
-  if $yum::extrarepo =~ /repoforgeextras/ { include yum::repo::repoforgeextras }
-  if $yum::extrarepo =~ /wandisco/ { include yum::repo::wandisco }
+  if 'epel' in $yum::extrarepo { include yum::repo::epel }
+  if 'rpmforge' in $yum::extrarepo { include yum::repo::rpmforge }
+  if 'jpackage5' in $yum::extrarepo { include yum::repo::jpackage5 }
+  if 'jpackage6' in $yum::extrarepo { include yum::repo::jpackage6 }
+  if 'remi' in $yum::extrarepo { include yum::repo::remi }
+  if 'remi_php55' in $yum::extrarepo { include yum::repo::remi_php55 }
+  if 'remi_php56' in $yum::extrarepo { include yum::repo::remi_php56 }
+  if 'tmz' in $yum::extrarepo and $osver[0] != '4' { include yum::repo::tmz }
+  if 'webtatic' in $yum::extrarepo { include yum::repo::webtatic }
+  if 'puppetlabs' in $yum::extrarepo and $osver[0] != '4' { include yum::repo::puppetlabs }
+  if 'puppetdevel' in $yum::extrarepo and $osver[0] != '4' { include yum::repo::puppetdevel }
+  if 'nginx' in $yum::extrarepo and $osver[0] != '4' { include yum::repo::nginx }
+  if 'mongodb' in $yum::extrarepo and $osver[0] != '4' { include yum::repo::mongodb }
+  if 'repoforge' in $yum::extrarepo { include yum::repo::repoforge }
+  if 'repoforgeextras' in $yum::extrarepo { include yum::repo::repoforgeextras }
+  if 'integ_ganeti' in $yum::extrarepo { include yum::repo::integ_ganeti }
+  if 'elrepo' in $yum::extrarepo { include yum::repo::elrepo }
+  if 'newrelic' in $yum::extrarepo { include yum::repo::newrelic }
+  if 'mod_pagespeed' in $yum::extrarepo { include yum::repo::mod_pagespeed }
+  if 'jenkins' in $yum::extrarepo { include yum::repo::jenkins }
+  if 'centalt' in $yum::extrarepo { include yum::repo::centalt }
+  if 'elastix' in $yum::extrarepo { include yum::repo::elastix }
+  if 'mysql_community' in $yum::extrarepo { include yum::repo::mysql_community }
+  if 'dell_omsa' in $yum::extrarepo { include yum::repo::dell_omsa }
 
   if $yum::bool_defaultrepo {
     case $::operatingsystem {
       centos: {
+        if $osver[0] == '7' { include yum::repo::centos7 }
         if $osver[0] == '6' { include yum::repo::centos6 }
         if $osver[0] == '5' { include yum::repo::centos5 }
         if $osver[0] == '4' { include yum::repo::centos4 }
-        if $yum::extrarepo =~ /centos-testing/ { include yum::repo::centos_testing }
-        if $yum::extrarepo =~ /karan/ { include yum::repo::karan }
-        if $yum::extrarepo =~ /atomic/ { include yum::repo::atomic }
+        if 'centos-testing' in $yum::extrarepo { include yum::repo::centos_testing }
+        if 'karan' in $yum::extrarepo { include yum::repo::karan }
+        if 'atomic' in $yum::extrarepo { include yum::repo::atomic }
+        if 'scl' in $yum::extrarepo { include yum::repo::scl }
       }
       redhat: {
       }
       scientific: {
-        include yum::repo::sl
-        if $yum::extrarepo =~ /centos-testing/ { include yum::repo::centos_testing }
-        if $yum::extrarepo =~ /karan/ { include yum::repo::karan }
+        if $osver[0] == '6' { include yum::repo::sl6 }
+        if $osver[0] == '5' { include yum::repo::sl5 }
+        if 'centos-testing' in $yum::extrarepo { include yum::repo::centos_testing }
+        if 'karan' in $yum::extrarepo { include yum::repo::karan }
+      }
+      xenserver: {
+        include yum::repo::xenserver
       }
       default: { }
     }
