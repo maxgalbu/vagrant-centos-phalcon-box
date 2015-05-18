@@ -6,7 +6,7 @@ Made by ALessandro Franceschi / Lab42
 
 Official site: http://www.example42.com
 
-Official git repository: http://github.com/lermit/puppet-php
+Official git repository: http://github.com/example42/puppet-php
 
 Released under the terms of Apache 2 License.
 
@@ -38,7 +38,7 @@ For detailed info about the logic and usage patterns of Example42 modules check 
           audit_only => true
         }
 
-* Install php in an nginx environment
+* Define nginx service to be notified on changes
 
         class { 'php':
           service => 'nginx'
@@ -68,6 +68,24 @@ For detailed info about the logic and usage patterns of Example42 modules check 
           module_prefix => "php-"
         }
 
+## USAGE - Module Configuration
+
+* Configure php module to all SAPI
+        
+        php::mod { "mcrypt": }
+
+  *__Note:__ `[name]` is filename without `.ini` extension from `/etc/php5/mods-available/<name>.ini`*
+
+* Configure multiple php module to all SAPI
+
+        $mods = ["mcrypt", "mongo"]
+        php::mod { "$mods": }
+
+* Unconfigure php module to all SAPI
+        
+        php::mod { "xdebug"
+            disable => true,
+        }
 
 ## USAGE - Pear Management
 
@@ -80,6 +98,13 @@ For detailed info about the logic and usage patterns of Example42 modules check 
         php::pear::module { 'PHPUnit':
           repository  => 'pear.phpunit.de',
           use_package => 'no',
+        }
+
+* Install a pear package will all dependencies (--alldeps)
+
+        php::pear::module { 'PHPUnit':
+          repository  => 'pear.phpunit.de',
+          alldeps => 'true',
         }
 
 * Set a config option
@@ -104,14 +129,31 @@ For detailed info about the logic and usage patterns of Example42 modules check 
 
         php::pecl::config { http_proxy: value => "myproxy:8080" }
 
+* Auto-answer prompts for unattended-installation (where configure might used used for instance)
+
+        php::pecl::module { 'stomp':
+          use_package     => 'false',
+          auto_answer     => 'no\\n\\n',
+        }
 
 ## USAGE - Overrides and Customizations
-* Use custom sources for main config file
+* Use custom sources for main config file.
 
         class { 'php':
           source => [ "puppet:///modules/lab42/php/php.conf-${hostname}" , "puppet:///modules/lab42/php/php.conf" ],
         }
 
+* Manage php.ini files on Debian and Suse derivatives. Here the main config file path (managed with the source/template params) defaults to /etc/php5/apache2/php.ini. To manage other files, either set a different path in config_file or use the php::conf define.
+
+        class { 'php':
+          config_file => '/etc/php5/apache2/php.ini',      # Default value on Ubuntu/Suse
+          template    => 'example42/php/php.ini-apache2.erb',
+        }
+
+        php::conf { 'php.ini-cli':
+          path     => '/etc/php5/cli/php.ini',
+          template => 'example42/php/php.ini-cli.erb',
+        }
 
 * Use custom source directory for the whole configuration dir
 

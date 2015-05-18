@@ -33,9 +33,10 @@ class php::params {
   }
 
   $pear_module_prefix = $::operatingsystem ? {
-    /(?i:Ubuntu|Debian|Mint)/ => 'php-',
-    /(?i:SLES|OpenSuSe)/      => 'php5-pear-',
-    default                   => 'pear-',
+    /(?i:Ubuntu|Debian|Mint)/             => 'php-',
+    /(?i:SLES|OpenSuSe)/                  => 'php5-pear-',
+    /(?i:CentOS|RedHat|Scientific|Linux)/ => 'php-pear-',
+    default                               => 'pear-',
   }
 
   $package = $::operatingsystem ? {
@@ -44,8 +45,8 @@ class php::params {
     default                   => 'php',
   }
 
-  # Here it's not the php service script name but 
-  # web service name like apache2, nginx, etc.
+  # Here it's not the php service script name but
+  # web service name like apache2, nginx, etc.
   $service = $::operatingsystem ? {
     /(?i:Ubuntu|Debian|Mint|SLES|OpenSuSE)/ => 'apache2',
     default                                 => 'httpd',
@@ -53,13 +54,12 @@ class php::params {
 
   $config_dir = $::operatingsystem ? {
     /(?i:Ubuntu|Debian|Mint|SLES|OpenSuSE)/ => '/etc/php5',
-    default                                 => '/etc/php.d',
+    default                                   => '/etc/php.d',
   }
 
   $config_file = $::operatingsystem ? {
-    /(?i:Ubuntu|Debian|Mint)/ => '/etc/php5/php.ini',
-    /(?i:SLES|OpenSuSE)/      => '/etc/php5/apache2/php.ini',
-    default                   => '/etc/php.ini',
+    /(?i:Ubuntu|Debian|Mint|SLES|OpenSuSE)/ => '/etc/php5/apache2/php.ini',
+    default                                 => '/etc/php.ini',
   }
 
   $config_file_mode = $::operatingsystem ? {
@@ -97,6 +97,7 @@ class php::params {
   $version = 'present'
   $service_autorestart = true
   $absent = false
+  $install_options = []
 
   ### General module variables that can have a site or per module default
   $puppi = false

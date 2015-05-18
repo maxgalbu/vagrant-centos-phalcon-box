@@ -52,7 +52,7 @@
 #   augeas. This will make php::pecl automatically add extensions to the
 #   php.ini.
 #   Can be defined also by the (top scope) variable $php_augeas
-#   
+#
 # [*options*]
 #   An hash of custom options to be used in templates for arbitrary settings.
 #   Can be defined also by the (top scope) variable $php_options
@@ -62,6 +62,16 @@
 #   Default: present. Can be 'latest' or a specific version number.
 #   Note that if the argument absent (see below) is set to true, the
 #   package is removed, whatever the value of version parameter.
+#
+# [*install_options*]
+#   The package install options to be passed to the package manager. Useful for
+#   setting advanced/custom options during package install/update.
+#   For example, adding a `--enablerepo` option to Yum or specifying a
+#   `--no-install-recommends` option during an Apt install.
+#   NOTE: The `install_options` package class parameter was added for Yum/Apt
+#   in Puppet 3.6. Its format of the option is an array, where each option in
+#   the array is either a string or a hash.
+#   Example: `install_options => ['-y', {'--enablerepo' => 'remi-php55'}]`
 #
 # [*absent*]
 #   Set to 'true' to remove package(s) installed by module
@@ -151,6 +161,7 @@ class php (
   $augeas              = params_lookup( 'augeas' ),
   $options             = params_lookup( 'options' ),
   $version             = params_lookup( 'version' ),
+  $install_options     = params_lookup( 'install_options' ),
   $absent              = params_lookup( 'absent' ),
   $monitor             = params_lookup( 'monitor' , 'global' ),
   $monitor_tool        = params_lookup( 'monitor_tool' , 'global' ),
@@ -212,13 +223,13 @@ class php (
   }
 
   if ($php::source and $php::template) {
-    fail ("PHP: cannot set both source and template")
+    fail ('PHP: cannot set both source and template')
   }
   if ($php::source and $php::bool_augeas) {
-    fail ("PHP: cannot set both source and augeas")
+    fail ('PHP: cannot set both source and augeas')
   }
   if ($php::template and $php::bool_augeas) {
-    fail ("PHP: cannot set both template and augeas")
+    fail ('PHP: cannot set both template and augeas')
   }
 
   $manage_file_source = $php::source ? {
@@ -231,10 +242,16 @@ class php (
     default   => template($php::template),
   }
 
+  $realservice_autorestart = $bool_service_autorestart ? {
+    true  => Service[$php::service],
+    false => undef,
+  }
+
   ### Managed resources
   package { 'php':
-    ensure => $php::manage_package,
-    name   => $php::package,
+    ensure          => $php::manage_package,
+    name            => $php::package,
+    install_options => $php::install_options,
   }
 
   file { 'php.conf':
@@ -248,6 +265,7 @@ class php (
     content => $php::manage_file_content,
     replace => $php::manage_file_replace,
     audit   => $php::manage_audit,
+    notify  => $realservice_autorestart,
   }
 
   # The whole php configuration directory can be recursively overriden
@@ -258,6 +276,7 @@ class php (
       require => Package['php'],
       source  => $php::source_dir,
       recurse => true,
+      links   => follow,
       purge   => $php::bool_source_dir_purge,
       force   => $php::bool_source_dir_purge,
       replace => $php::manage_file_replace,
