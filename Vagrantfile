@@ -32,8 +32,21 @@ Vagrant.configure("2") do |config|
 	end
 	
 	config.vm.network :forwarded_port, guest: 1080, host: 1080
-	config.vm.network :forwarded_port, guest: 3306, host: 3306 #mysql
-	config.vm.network :forwarded_port, guest: 27017, host: 27017 #mongodb
+
+	#mysql
+	if `netstat -an | grep 3306 | grep LISTEN`
+		config.vm.network :forwarded_port, guest: 3306, host: 3307
+	else
+		config.vm.network :forwarded_port, guest: 3306, host: 3306
+	end
+
+	#mongodb
+	if `netstat -an | grep 27017 | grep LISTEN`
+		config.vm.network :forwarded_port, guest: 27017, host: 27018
+	else
+		config.vm.network :forwarded_port, guest: 27017, host: 27017
+	end
+
 	config.ssh.forward_agent = true
 	
 	config.vm.provider :virtualbox do |v|
