@@ -71,7 +71,7 @@ vcsrepo { "/tmp/cphalcon":
 	ensure => present,
 	provider => git,
 	source => 'https://github.com/phalcon/cphalcon',
-	revision => 'master',
+	revision => '1.3.5',
 	require => Package[$phalconpackages],
 }
 exec { 'install phalcon':
