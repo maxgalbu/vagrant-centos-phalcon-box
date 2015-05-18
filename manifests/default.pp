@@ -18,9 +18,10 @@ file_line { 'change $PS1 colors':
 }
 
 class { 'yum':
-	extrarepo => [ 'epel' , 'rpmforge', 'wandisco', 'atrpms' ],
+	extrarepo => [ 'epel' , 'rpmforge', 'atrpms', 'webtatic' ],
 }
 include yum::repo::atrpms
+include yum::repo::wandisco
 
 $packagelist = [
 	'curl',
@@ -80,7 +81,7 @@ exec { 'install phalcon':
 	user => root,
 	require => [
 		Vcsrepo['/tmp/cphalcon'],
-		Class['php::devel']
+		Php::Module['devel']
 	],
 	unless => 'php -i 2>&1 | grep "^phalcon$" | grep -vi "no such file"',
 }
@@ -187,9 +188,10 @@ apache::vhost { 'localhost':
 
 #Installo php
 class { 'php':
-	service             => 'apache',
+	package => "php54w",
+	service => 'apache',
 	service_autorestart => false,
-	module_prefix       => 'php-',
+	module_prefix => 'php54w-',
 	require => Class['yum'],
 }
 
@@ -200,6 +202,7 @@ php::module { 'pdo': }
 php::module { 'bcmath': }
 php::module { 'gd': }
 php::module { 'xml': }
+php::module { 'devel': }
 php::module { 'pear': } #Installa anche pecl
 
 #Installo estensione mongo da pecl
@@ -220,10 +223,6 @@ file { '/etc/php.d/mongo.ini':
 		Exec['install mongo from pecl']
 	],
 	notify => Service['apache'],
-}
-
-class { 'php::devel':
-	require => Class['php'],
 }
 
 #Modifico php.ini
